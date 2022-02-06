@@ -36,8 +36,9 @@ class Game {
       right_rod: Bodies.rectangle(570, 250, 240, 20, { isStatic: true }),
     }
     let water_blob = this.spawn_fluid(350, 150, 70)
+    let water_blob2 = this.spawn_fluid(550, 150, 70)
 
-    let level_geom = [...water_blob, ...Object.values(level_static_geom)]
+    let level_geom = [...water_blob, ...water_blob2, ...Object.values(level_static_geom)]
 
     Composite.add(engine.world, level_geom);
     //Composite.add(engine.world, water_blob);
