@@ -8,7 +8,7 @@ const WALL = {
   staticFriction: 0.8,
   render: {
     fillStyle: "#666"
-  }
+  },
 }
 const ROD = {
   density: 1,
@@ -16,7 +16,7 @@ const ROD = {
   staticFriction: 0.8,
   render: {
     fillStyle: "#fc8"
-  }
+  },
 }
 const WATER = {
   density: 0.3,
@@ -24,12 +24,12 @@ const WATER = {
 }
 const WATER_COLOUR_1 = {
   render: {
-    fillStyle: "#3a7"
+    fillStyle: "#3a7",
   },
 };
 const WATER_COLOUR_2 = {
   render: {
-    fillStyle: "#37a"
+    fillStyle: "#37a",
   },
 };
 
