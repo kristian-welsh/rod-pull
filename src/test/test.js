@@ -20,7 +20,8 @@ function assertFalse(condition, message) {
 }
 
 function assertEqual(obj1, obj2, message) {
-  message = (message !== undefined) ? message : "objects were not equal"
+  let default_message = "objects were not equal: " + obj1 + ", " + obj2
+  message = (message !== undefined) ? message : default_message
   if(obj1 !== obj2)
     fail(message)
 }
@@ -52,7 +53,7 @@ class TestRunner {
   try_test = function(test_fun) {
     console.log(`Running Test: ${test_fun.name}`)
     try {
-      test_fun.bind(this).call()
+      test_fun.call()
       return PASS
     } catch(error) {
       console.warn(error.stack)
@@ -82,8 +83,8 @@ class TestClass {
   _initialize() {
     this._test_functions = Object.getOwnPropertyNames(this)
       .filter(prop_name => { return prop_name.includes("test_") })
-      .map(test_name => { return this[test_name] })
-    this._setup = (this.set_up !== undefined) ? this.set_up : _ => { }
-    this._teardown = (this.tear_down !== undefined) ? this.tear_down : _ => { }
+      .map(test_name => { return this[test_name].bind(this) })
+    this._setup = (this.set_up !== undefined) ? this.set_up.bind(this) : _ => { }
+    this._teardown = (this.tear_down !== undefined) ? this.tear_down.bind(this) : _ => { }
   }
 }

@@ -1,15 +1,3 @@
-// requires script tag ./lib/matter/build/matter.js
-var Engine = Matter.Engine,
-Render = Matter.Render,
-Runner = Matter.Runner,
-Bodies = Matter.Bodies,
-Body = Matter.Body,
-Mouse = Matter.Mouse,
-Vector = Matter.Vector,
-MouseConstraint = Matter.MouseConstraint,
-Composites = Matter.Composites,
-Composite = Matter.Composite;
-
 // bodies in this 0 group use masking/filtering rules to collide
 const COLLISION_GROUP_ZERO = 0
 // bodies in the same non-zero group collide together
@@ -39,9 +27,12 @@ let aprox_sqrt = function(num) {
 }
 
 class BridgeAPI {
-  constructor(width, height) {
-    this.engine = Engine.create();
-    this.render = Render.create({
+  constructor(width, height, framework = Matter) {
+    // requires script tag ./lib/matter/build/matter.js
+    this.framework = framework
+
+    this.engine = framework.Engine.create();
+    this.render = framework.Render.create({
       element: document.body,
       engine: this.engine,
       options: {
@@ -50,21 +41,21 @@ class BridgeAPI {
         showConvexHulls: true,
       }
     });
-    this.mouse = Mouse.create(this.render.canvas)
+    this.mouse = framework.Mouse.create(this.render.canvas)
     this.render.mouse = this.mouse
-    this.runner = Runner.create();
+    this.runner = framework.Runner.create();
   }
 
   start = function() {
     let mouse_constraint = this.mouse_constraints(this.mouse, this.engine)
-    Composite.add(this.engine.world, mouse_constraint);
+    this.framework.Composite.add(this.engine.world, mouse_constraint);
 
-    Render.run(this.render);
-    Runner.run(this.runner, this.engine);
+    this.framework.Render.run(this.render);
+    this.framework.Runner.run(this.runner, this.engine);
   }
 
   mouse_constraints = function() {
-    return MouseConstraint.create(this.engine, {
+    return this.framework.MouseConstraint.create(this.engine, {
       mouse: this.mouse,
       constraint: {
         angularStiffness: 0.8,
@@ -80,8 +71,8 @@ class BridgeAPI {
   position_camera = function(bodies, raw_padding) {
     raw_padding = (raw_padding !== undefined) ? raw_padding :
       { x: 100, y: 100 }
-    let vec_padding = Vector.create(raw_padding.x, raw_padding.y);
-    Render.lookAt(this.render, bodies, vec_padding)
+    let vec_padding = this.framework.Vector.create(raw_padding.x, raw_padding.y);
+    this.framework.Render.lookAt(this.render, bodies, vec_padding)
   }
 
   /* sets collision filter to match the mouse constraint
@@ -105,13 +96,13 @@ class BridgeAPI {
   }
 
   add_geom = function(bodies) {
-    Composite.add(this.engine.world, bodies);
+    this.framework.Composite.add(this.engine.world, bodies);
   }
 
   fluid = function(xx, yy, aprox_num_blobs, fluid_properties) {
     let size = aprox_sqrt(aprox_num_blobs)
     let fluid_group =
-      Composites.stack(xx, yy, size, size, 0, 0, (x, y) => {
+      this.framework.Composites.stack(xx, yy, size, size, 0, 0, (x, y) => {
         return this.circle(x, y, 10, fluid_properties)
       });
     let hull = this.draw_hull(fluid_group);
@@ -132,11 +123,11 @@ class BridgeAPI {
   }
 
   rect = function(x, y, width, height, properties) {
-    return this.disable_drag(Bodies.rectangle(x, y, width, height, properties))
+    return this.disable_drag(this.framework.Bodies.rectangle(x, y, width, height, properties))
   }
 
   circle = function(x, y, size, properties) {
-    return this.disable_drag(Bodies.circle(x, y, size, properties))
+    return this.disable_drag(this.framework.Bodies.circle(x, y, size, properties))
   } 
 
   create_rects = function(rectangles) {
